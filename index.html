@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CELESTØRIX FAMILY • Panel</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#08090d;color:#eee;font-family:system-ui,Arial;display:flex;justify-content:center;padding:28px}
+.card{width:min(520px,100%);background:#11131a;border:1px solid #292d38;border-radius:24px;padding:24px;box-shadow:0 20px 60px #0008}
+h1{font-size:23px;margin:0 0 8px}p{color:#a9afbd}.badge{display:inline-block;border:1px solid #353b48;padding:6px 10px;border-radius:999px;font-size:12px;margin-bottom:18px}
+input,button{width:100%;padding:14px;border-radius:14px;border:1px solid #343946;background:#0c0e13;color:#fff;margin-top:10px}
+button{cursor:pointer;background:#191d27;font-weight:700}button:hover{background:#232938}
+.code{font-size:30px;letter-spacing:5px;text-align:center;margin:20px 0;padding:18px;border-radius:16px;background:#080a0f;border:1px dashed #424958;display:none}
+.status{margin-top:16px;padding:12px;border-radius:14px;background:#0b0d12;color:#bfc5d2;font-size:14px}
+.small{font-size:12px;color:#7f8797}
+a{color:#d7dbe5}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="badge">♛ CELESTØRIX FAMILY • BOT PANEL ♛</div>
+  <h1>Connexion sans QR</h1>
+  <p>Génère un <b>code de connexion WhatsApp</b>, puis saisis-le dans WhatsApp → Appareils connectés → Connecter un appareil → Connecter avec un numéro.</p>
+
+  <input id="key" type="password" placeholder="Clé du panneau (PANEL_KEY)">
+  <input id="phone" inputmode="numeric" placeholder="Numéro avec indicatif, ex. 24206...">
+  <button onclick="pair()">GÉNÉRER LE CODE</button>
+
+  <div id="code" class="code"></div>
+  <div id="status" class="status">État : vérification...</div>
+
+  <p class="small">Le site ne demande jamais ton code de vérification WhatsApp. Ne partage jamais ce code avec quelqu'un d'autre.</p>
+</main>
+<script>
+async function status(){
+  const key=document.getElementById("key").value;
+  if(!key)return;
+  const r=await fetch("/api/status",{headers:{"x-panel-key":key}});
+  const d=await r.json();
+  document.getElementById("status").textContent=d.error?d.error:(d.connected?"🟢 Bot connecté":"🟡 Bot en attente de connexion");
+}
+async function pair(){
+  const key=document.getElementById("key").value;
+  const phone=document.getElementById("phone").value;
+  const s=document.getElementById("status");
+  s.textContent="Génération du code...";
+  const r=await fetch("/api/pairing-code",{method:"POST",headers:{"Content-Type":"application/json","x-panel-key":key},body:JSON.stringify({phone})});
+  const d=await r.json();
+  if(d.code){
+    const box=document.getElementById("code");
+    box.textContent=d.code;
+    box.style.display="block";
+    s.textContent="🟢 Code généré. Utilise-le dans WhatsApp.";
+  }else s.textContent=d.error||"Erreur";
+}
+setInterval(status,5000);
+</script>
+</body>
+</html>
