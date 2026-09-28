@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: celestorix-family-bot
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: BOT_NAME
+        value: "𝙲𝙴𝙻𝙴𝚂𝚃𝙾𝚁𝙸𝚇 𝙵𝙰𝙼𝙸𝙻𝚈"
+      - key: CLAN_TAG
+        value: "CLX"
+      - key: MIN_MEMBERS
+        value: "100"
+      - key: QG_LINK
+        sync: false
+      - key: CHANNEL_LINK
+        sync: false
+      - key: PANEL_KEY
+        sync: false
+      - key: OWNER_NUMBER
+        sync: false
